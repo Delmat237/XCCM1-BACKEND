@@ -20,7 +20,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                    .title("XXCM1 : Plateforme de cours Électronique - API")
+                    .title("XCCM1 : Plateforme de cours Électronique - API")
                     .description("""
                             ## Documentation API Complète
 
