@@ -1,19 +1,20 @@
+// PasswordResetTokenRepository.java
 package com.ihm.backend.repository;
 
-import cm.enspy.xccm.domain.entity.PasswordResetToken;
-import org.springframework.data.r2dbc.repository.Query;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
-import reactor.core.publisher.Mono;
+import com.ihm.backend.domain.entity.PasswordResetToken;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
-public interface PasswordResetTokenRepository extends R2dbcRepository<PasswordResetToken, UUID> {
-    Mono<PasswordResetToken> findByToken(String token);
-    
-    @Query("UPDATE password_reset_tokens SET used = true WHERE user_id = :userId")
-    Mono<Void> markAllTokensAsUsed(UUID userId);
-    
-    @Query("DELETE FROM password_reset_tokens WHERE expiry_date < :date")
-    Mono<Void> deleteAllExpiredSince(LocalDateTime date);
+@Repository
+public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, UUID> {
+
+    Optional<PasswordResetToken> findByToken(String token);
+
+    void deleteAllByExpiryDateBefore(LocalDateTime dateTime);
+
+    void deleteByUserId(UUID userId);
 }

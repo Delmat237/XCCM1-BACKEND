@@ -1,11 +1,13 @@
+// TeacherRepository.java
 package com.ihm.backend.repository;
 
-import cm.enspy.xccm.domain.entity.Teacher;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
-import reactor.core.publisher.Mono;
+import com.ihm.backend.domain.entity.Teacher;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-public interface TeacherRepository extends R2dbcRepository<Teacher, UUID> {
-    Mono<Teacher> findByEmail(String email);
+@Repository
+public interface TeacherRepository extends JpaRepository<Teacher, UUID> {
+    // Méthodes spécifiques aux profs si besoin
 }
