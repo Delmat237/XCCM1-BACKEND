@@ -1,4 +1,4 @@
-package cm.enspy.xccm.security;
+package com.ihm.backend.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
