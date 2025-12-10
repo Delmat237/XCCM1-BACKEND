@@ -1,8 +1,8 @@
 // UserRepository.java
 package com.ihm.backend.repository;
 
-import com.ihm.backend.domain.entity.User;
-import com.ihm.backend.domain.enums.UserRole;
+import com.ihm.backend.entity.User;
+import com.ihm.backend.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

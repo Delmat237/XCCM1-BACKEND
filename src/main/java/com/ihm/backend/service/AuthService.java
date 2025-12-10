@@ -1,12 +1,12 @@
 // AuthService.java
 package com.ihm.backend.service;
 
-import com.ihm.backend.domain.dto.request.AuthenticationRequest;
-import com.ihm.backend.domain.dto.request.PasswordResetRequest;
-import com.ihm.backend.domain.dto.request.PasswordUpdateRequest;
-import com.ihm.backend.domain.dto.request.RegisterRequest;
-import com.ihm.backend.domain.dto.response.ApiResponse;
-import com.ihm.backend.domain.dto.response.AuthenticationResponse;
+import com.ihm.backend.dto.request.AuthenticationRequest;
+import com.ihm.backend.dto.request.PasswordResetRequest;
+import com.ihm.backend.dto.request.PasswordUpdateRequest;
+import com.ihm.backend.dto.request.RegisterRequest;
+import com.ihm.backend.dto.response.ApiResponse;
+import com.ihm.backend.dto.response.AuthenticationResponse;
 
 public interface AuthService {
 

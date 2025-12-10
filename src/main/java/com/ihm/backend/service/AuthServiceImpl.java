@@ -1,10 +1,10 @@
 package com.ihm.backend.service;
 
-import com.ihm.backend.domain.dto.request.*;
-import com.ihm.backend.domain.dto.response.*;
-import com.ihm.backend.domain.entity.*;
-import com.ihm.backend.domain.entity.User;
-import com.ihm.backend.domain.enums.UserRole;
+import com.ihm.backend.dto.request.*;
+import com.ihm.backend.dto.response.*;
+import com.ihm.backend.entity.*;
+import com.ihm.backend.entity.User;
+import com.ihm.backend.enums.UserRole;
 import com.ihm.backend.exception.*;
 import com.ihm.backend.repository.*;
 import lombok.RequiredArgsConstructor;

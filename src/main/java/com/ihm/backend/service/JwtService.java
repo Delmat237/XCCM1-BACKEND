@@ -1,4 +1,3 @@
-// src/main/java/com/ihm/backend/security/JwtService.java
 package com.ihm.backend.service;
 
 import io.jsonwebtoken.*;

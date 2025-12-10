@@ -1,7 +1,7 @@
 package com.ihm.backend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ihm.backend.domain.dto.response.ApiResponse;
+import com.ihm.backend.dto.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;

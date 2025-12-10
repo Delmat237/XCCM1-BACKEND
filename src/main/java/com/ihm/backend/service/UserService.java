@@ -1,8 +1,7 @@
-// UserService.java
 package com.ihm.backend.service;
 
-import com.ihm.backend.domain.entity.User;
-import com.ihm.backend.domain.enums.UserRole;
+import com.ihm.backend.entity.User;
+import com.ihm.backend.enums.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

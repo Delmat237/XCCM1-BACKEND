@@ -1,7 +1,7 @@
 // TeacherRepository.java
 package com.ihm.backend.repository;
 
-import com.ihm.backend.domain.entity.Teacher;
+import com.ihm.backend.entity.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

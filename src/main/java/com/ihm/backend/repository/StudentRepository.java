@@ -1,7 +1,7 @@
 // StudentRepository.java
 package com.ihm.backend.repository;
 
-import com.ihm.backend.domain.entity.Student;
+import com.ihm.backend.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
