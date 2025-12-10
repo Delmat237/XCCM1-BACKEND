@@ -143,6 +143,9 @@ public class AuthServiceImpl implements AuthService {
             .academicYear(r.getAcademicYear())
             .interests(r.getInterests() != null ? String.join(",", r.getInterests()) : null)
             .activities(r.getActivities() != null ? String.join(",", r.getActivities()) : null)
+            .active(true)      // Activer le compte
+            .verified(true)     // Marquer comme vérifié
+            .active(true)       // Marquer comme actif
             .build();
     }
 
@@ -164,6 +167,9 @@ public class AuthServiceImpl implements AuthService {
             .yearsOfExperience(r.getYearsOfExperience())
             .officeLocation(r.getOfficeLocation())
             .officeHours(r.getOfficeHours())
+             .active(true)      // Activer le compte
+        .verified(true)     // Marquer comme vérifié
+        .active(true)       // Marquer comme actif
             .build();
     }
 
