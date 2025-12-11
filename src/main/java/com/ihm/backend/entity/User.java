@@ -79,7 +79,7 @@ public abstract class User implements UserDetails {
     private boolean active = true;
 
     @Builder.Default
-    private boolean verified = false;
+    private boolean verified = true;
 
     @Transient // Pas stocké en base, calculé
     @JsonIgnore
