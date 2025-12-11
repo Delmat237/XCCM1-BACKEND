@@ -3,14 +3,13 @@ package com.ihm.backend.service;
 import com.ihm.backend.dto.request.*;
 import com.ihm.backend.dto.response.*;
 import com.ihm.backend.entity.*;
-import com.ihm.backend.entity.User;
 import com.ihm.backend.enums.UserRole;
 import com.ihm.backend.exception.*;
 import com.ihm.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.*; // Contient org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +35,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResponse<AuthenticationResponse> authenticate(AuthenticationRequest request) {
         try {
-        // REMPLACER l'appel à authenticationManager par une vérification manuelle
-        User user = userRepository.findByEmail(request.getEmail())
+        // CORRECTION 1 : Spécifier l'entité User pour lever l'ambiguïté
+        com.ihm.backend.entity.User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
 
         // Vérifier le mot de passe
@@ -74,7 +73,8 @@ public class AuthServiceImpl implements AuthService {
             return ApiResponse.conflict("Cet email est déjà utilisé", null);
         }
 
-        User user;
+        // CORRECTION 2 : Spécifier l'entité User pour la variable
+        com.ihm.backend.entity.User user;
         try {
             user = switch (request.getRole()) {
                 case STUDENT -> buildStudent(request);
@@ -92,7 +92,8 @@ public class AuthServiceImpl implements AuthService {
         user.setCreatedAt(LocalDateTime.now());
 
         // Sauvegarde
-        User saved = userRepository.save(user);
+        // CORRECTION 3 : Spécifier l'entité User pour la variable de sauvegarde
+        com.ihm.backend.entity.User saved = userRepository.save(user);
         log.info("Utilisateur créé: {}", saved.getEmail());
 
         // Génération token
@@ -103,6 +104,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Student buildStudent(RegisterRequest r) {
+        // ... (Pas de changement ici, car l'objet Student n'est pas ambigu)
+        // ...
+        
         // Conversion sécurisée de averageGrade
         Double averageGrade = null;
         if (r.getAverageGrade() != null && !r.getAverageGrade().isEmpty()) {
@@ -144,8 +148,8 @@ public class AuthServiceImpl implements AuthService {
             .interests(r.getInterests() != null ? String.join(",", r.getInterests()) : null)
             .activities(r.getActivities() != null ? String.join(",", r.getActivities()) : null)
             .active(true)      // Activer le compte
-            .verified(true)     // Marquer comme vérifié
-            .active(true)       // Marquer comme actif
+            .verified(true)      // Marquer comme vérifié
+            .active(true)        // Marquer comme actif
             .build();
     }
 
@@ -167,15 +171,16 @@ public class AuthServiceImpl implements AuthService {
             .yearsOfExperience(r.getYearsOfExperience())
             .officeLocation(r.getOfficeLocation())
             .officeHours(r.getOfficeHours())
-             .active(true)      // Activer le compte
-        .verified(true)     // Marquer comme vérifié
-        .active(true)       // Marquer comme actif
+            .active(true)      // Activer le compte
+        .verified(true)      // Marquer comme vérifié
+        .active(true)        // Marquer comme actif
             .build();
     }
 
     @Override
     public ApiResponse<String> requestPasswordReset(PasswordResetRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        // CORRECTION 4 : Spécifier l'entité User pour lever l'ambiguïté
+        com.ihm.backend.entity.User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
         String token = UUID.randomUUID().toString();
@@ -207,7 +212,8 @@ public class AuthServiceImpl implements AuthService {
             return ApiResponse.badRequest("Les mots de passe ne correspondent pas", null);
         }
 
-        User user = userRepository.findById(token.getUserId())
+        // CORRECTION 5 : Spécifier l'entité User pour lever l'ambiguïté
+        com.ihm.backend.entity.User user = userRepository.findById(token.getUserId())
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
