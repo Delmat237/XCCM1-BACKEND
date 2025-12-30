@@ -35,43 +35,42 @@ import java.util.UUID;
 public class CourseController {
     @Autowired
     private CourseService courseService;
+
     @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/{authorId}")
     public ResponseEntity<?> createCourse(@RequestBody CourseCreateRequestdto request,
-                                           @PathVariable UUID authorId,
-                                           Authentication authentication) {
+            @PathVariable UUID authorId,
+            Authentication authentication) {
         try {
             // Vérifier que l'enseignant crée un cours pour lui-même
             User currentUser = (User) authentication.getPrincipal();
             if (!currentUser.getId().equals(authorId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Vous ne pouvez créer un cours que pour vous-même");
+                        .body("Vous ne pouvez créer un cours que pour vous-même");
             }
-            
+
             return ResponseEntity.status(HttpStatus.CREATED)
-                     .body(courseService.createCourse(request, authorId));
+                    .body(courseService.createCourse(request, authorId));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-
-
     @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/{authorId}")
     public ResponseEntity<?> getAuthorCourses(@PathVariable UUID authorId,
-                                                Authentication authentication) {
+            Authentication authentication) {
         try {
             // Vérifier que l'enseignant accède à ses propres cours
             User currentUser = (User) authentication.getPrincipal();
             if (!currentUser.getId().equals(authorId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Vous ne pouvez consulter que vos propres cours");
+                        .body("Vous ne pouvez consulter que vos propres cours");
             }
-            
+
             return ResponseEntity.status(HttpStatus.OK)
-                     .body(courseService.getAllCoursesForTeacher(authorId));
+                    .body(courseService.getAllCoursesForTeacher(authorId));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -81,97 +80,101 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/{courseId}/coverImage/upload")
     public ResponseEntity<?> uploadImage(@PathVariable Integer courseId,
-                                          @RequestParam MultipartFile image,
-                                          Authentication authentication) {
+            @RequestParam MultipartFile image,
+            Authentication authentication) {
         try {
             User currentUser = (User) authentication.getPrincipal();
             courseService.validateOwnership(courseId, currentUser.getId());
-            
+
             return ResponseEntity.status(HttpStatus.OK)
-                     .body(courseService.uploadCoverImage(courseId, image));
+                    .body(courseService.uploadCoverImage(courseId, image));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
 
     @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/{courseId}/setStatus/{status}")
     public ResponseEntity<?> changeCourseStatus(@PathVariable Integer courseId,
-                                                 @PathVariable CourseStatus status,
-                                                 Authentication authentication) {
+            @PathVariable CourseStatus status,
+            Authentication authentication) {
         try {
             User currentUser = (User) authentication.getPrincipal();
             courseService.validateOwnership(courseId, currentUser.getId());
-            
+
             return ResponseEntity.status(HttpStatus.OK)
-                     .body(courseService.changeCourseStatus(status, courseId));
+                    .body(courseService.changeCourseStatus(status, courseId));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-     @GetMapping("/{authorId}/status/{status}")
-    public ResponseEntity<?> getCoureByStatusForAuthor(@PathVariable Integer authorId,@PathVariable CourseStatus status) {
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{authorId}/status/{status}")
+    public ResponseEntity<?> getCoureByStatusForAuthor(@PathVariable Integer authorId,
+            @PathVariable CourseStatus status) {
         try {
-          return ResponseEntity.status(HttpStatus.OK)
-                     .body(courseService.getCoursesByStatusForAuthor(authorId,status));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(courseService.getCoursesByStatusForAuthor(authorId, status));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-
-         @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping
     public ResponseEntity<?> getAllCourses() {
         try {
-          return ResponseEntity.status(HttpStatus.OK)
-                     .body(courseService.getAllCourses());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(courseService.getAllCourses());
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     @PreAuthorize("hasRole('TEACHER')")
     @PutMapping("/{courseId}")
     public ResponseEntity<?> updateCourse(@PathVariable Integer courseId,
-                                           @RequestBody CourseUpdateRequestdto request,
-                                           Authentication authentication) {
-       try {
-           User currentUser = (User) authentication.getPrincipal();
-           courseService.validateOwnership(courseId, currentUser.getId());
-           
-           return ResponseEntity.status(HttpStatus.OK)
-                      .body(courseService.updateCourse(courseId, request));
+            @RequestBody CourseUpdateRequestdto request,
+            Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            courseService.validateOwnership(courseId, currentUser.getId());
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(courseService.updateCourse(courseId, request));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     @PreAuthorize("hasRole('TEACHER')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<?> deleteCourse(@PathVariable Integer courseId,
-                                           Authentication authentication) {
-       try {
-           User currentUser = (User) authentication.getPrincipal();
-           courseService.validateOwnership(courseId, currentUser.getId());
-           
-           courseService.deleteCourse(courseId);
-           return ResponseEntity.status(HttpStatus.OK)
-                      .body("Course deleted");
+            Authentication authentication) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            courseService.validateOwnership(courseId, currentUser.getId());
+
+            courseService.deleteCourse(courseId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("Course deleted");
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     /**
-     * Récupérer tous les cours enrichis avec les enrôlements de l'utilisateur courant
+     * Récupérer tous les cours enrichis avec les enrôlements de l'utilisateur
+     * courant
      * Accessible à tous les utilisateurs authentifiés
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/enriched")
     public ResponseEntity<?> getEnrichedCourses(Authentication authentication) {
         try {
@@ -180,27 +183,28 @@ public class CourseController {
                 User currentUser = (User) authentication.getPrincipal();
                 userId = currentUser.getId();
             }
-            
+
             List<EnrichedCourseResponse> enrichedCourses = courseService.getEnrichedCourses(userId);
             return ResponseEntity.ok(enrichedCourses);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     /**
      * Récupérer un cours enrichi spécifique
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/enriched/{courseId}")
     public ResponseEntity<?> getEnrichedCourse(@PathVariable Integer courseId,
-                                                Authentication authentication) {
+            Authentication authentication) {
         try {
             UUID userId = null;
             if (authentication != null) {
                 User currentUser = (User) authentication.getPrincipal();
                 userId = currentUser.getId();
             }
-            
+
             EnrichedCourseResponse enrichedCourse = courseService.getEnrichedCourse(courseId, userId);
             return ResponseEntity.ok(enrichedCourse);
         } catch (Exception e) {

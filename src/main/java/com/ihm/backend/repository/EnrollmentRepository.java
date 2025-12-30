@@ -10,25 +10,30 @@ import java.util.UUID;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    
+
     /**
      * Trouve un enrôlement spécifique pour un cours et un utilisateur
      * Utilise la navigation JPA: course.id et user.id
      */
     Optional<Enrollment> findByCourse_IdAndUser_Id(Integer courseId, UUID userId);
-    
+
     /**
      * Trouve tous les enrôlements d'un utilisateur
      */
     List<Enrollment> findByUser_Id(UUID userId);
-    
+
     /**
      * Trouve tous les enrôlements pour un cours donné
      */
     List<Enrollment> findByCourse_Id(Integer courseId);
-    
+
     /**
      * Vérifie si un utilisateur est déjà enrôlé à un cours
      */
     boolean existsByCourse_IdAndUser_Id(Integer courseId, UUID userId);
+
+    /**
+     * Trouve les enrôlements d'un auteur filtrés par statut
+     */
+    List<Enrollment> findByCourse_Author_IdAndStatus(UUID authorId, com.ihm.backend.enums.EnrollmentStatus status);
 }

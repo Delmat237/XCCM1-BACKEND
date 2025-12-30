@@ -112,14 +112,52 @@ public class EnrollmentController {
         try {
             User student = (User) authentication.getPrincipal();
             EnrollmentDTO enrollment = enrollmentService.getEnrollmentForUser(courseId, student.getId());
-            
+
             if (enrollment == null) {
                 return ResponseEntity.ok(ApiResponse.success("Non enrôlé", null));
             }
-            
+
             return ResponseEntity.ok(ApiResponse.success("Enrôlement trouvé", enrollment));
         } catch (Exception e) {
             log.error("Erreur lors de la récupération de l'enrôlement", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
+        }
+    }
+
+    /**
+     * Valider ou rejeter un enrôlement
+     * Accessible aux enseignants (ROLE_TEACHER)
+     */
+    @PutMapping("/{enrollmentId}/validate")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> validateEnrollment(
+            @PathVariable Long enrollmentId,
+            @RequestParam com.ihm.backend.enums.EnrollmentStatus status,
+            Authentication authentication) {
+        try {
+            User teacher = (User) authentication.getPrincipal();
+            EnrollmentDTO validated = enrollmentService.validateEnrollment(enrollmentId, status, teacher.getId());
+            return ResponseEntity.ok(ApiResponse.success("Statut de l'enrôlement mis à jour", validated));
+        } catch (Exception e) {
+            log.error("Erreur lors de la validation de l'enrôlement", e);
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.badRequest(e.getMessage(), null));
+        }
+    }
+
+    /**
+     * Récupérer les enrôlements en attente pour les cours de l'enseignant connecté
+     */
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> getPendingEnrollments(Authentication authentication) {
+        try {
+            User teacher = (User) authentication.getPrincipal();
+            List<EnrollmentDTO> pending = enrollmentService.getPendingEnrollmentsForTeacher(teacher.getId());
+            return ResponseEntity.ok(ApiResponse.success("Enrôlements en attente récupérés", pending));
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération des enrôlements en attente", e);
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
         }

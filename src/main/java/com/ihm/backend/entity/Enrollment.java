@@ -1,5 +1,8 @@
 package com.ihm.backend.entity;
 
+import com.ihm.backend.enums.CourseStatus;
+import com.ihm.backend.enums.EnrollmentStatus;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,11 +27,11 @@ public class Enrollment {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;  // L'étudiant enrôlé (role doit être STUDENT)
+    private User user; // L'étudiant enrôlé (role doit être STUDENT)
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
-    private Course course;  // Le cours
+    private Course course; // Le cours
 
     @CreationTimestamp
     @Column(name = "enrolled_at", updatable = false)
@@ -36,13 +39,18 @@ public class Enrollment {
 
     @Column(name = "progress")
     @Builder.Default
-    private Double progress = 0.0;  // Progression en % (0-100)
+    private Double progress = 0.0; // Progression en % (0-100)
 
     @Column(name = "last_accessed")
     private LocalDateTime lastAccessed;
 
     @Column(name = "completed")
     private Boolean completed;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    @Builder.Default
+    private EnrollmentStatus status = EnrollmentStatus.PENDING;
 
     // Méthodes utilitaires pour exposition via DTO
     @Transient

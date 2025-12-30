@@ -36,39 +36,40 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentDTO enrollStudent(Integer courseId, UUID userId) throws Exception {
         log.info("Tentative d'enrôlement: userId={}, courseId={}", userId, courseId);
-        
+
         // Vérifier que l'utilisateur existe et est un étudiant
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
-        
+
         if (user.getRole() != UserRole.STUDENT) {
             throw new AccessDeniedException("Seuls les étudiants peuvent s'enrôler à des cours");
         }
-        
+
         // Vérifier que le cours existe et est publié
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cours non trouvé"));
-        
+
         if (course.getStatus() != CourseStatus.PUBLISHED) {
             throw new IllegalStateException("Ce cours n'est pas encore publié");
         }
-        
+
         // Vérifier qu'il n'y a pas de doublon
         if (enrollmentRepository.existsByCourse_IdAndUser_Id(courseId, userId)) {
             throw new IllegalStateException("Vous êtes déjà enrôlé à ce cours");
         }
-        
+
         // Créer l'enrôlement
         Enrollment enrollment = Enrollment.builder()
                 .user(user)
                 .course(course)
                 .progress(0.0)
                 .completed(false)
+                .status(com.ihm.backend.enums.EnrollmentStatus.PENDING) // Toujours PENDING au début
                 .build();
-        
+
         Enrollment saved = enrollmentRepository.save(enrollment);
         log.info("Enrôlement créé avec succès: id={}", saved.getId());
-        
+
         return EnrollmentDTO.fromEntity(saved);
     }
 
@@ -80,21 +81,21 @@ public class EnrollmentService {
         if (progress < 0 || progress > 100) {
             throw new IllegalArgumentException("La progression doit être entre 0 et 100");
         }
-        
+
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrôlement non trouvé"));
-        
+
         enrollment.setProgress(progress);
         enrollment.setLastAccessed(LocalDateTime.now());
-        
+
         // Marquer comme complété automatiquement si progression = 100%
         if (progress >= 100.0) {
             enrollment.setCompleted(true);
         }
-        
+
         Enrollment saved = enrollmentRepository.save(enrollment);
         log.info("Progression mise à jour: enrollmentId={}, progress={}%", enrollmentId, progress);
-        
+
         return EnrollmentDTO.fromEntity(saved);
     }
 
@@ -105,14 +106,14 @@ public class EnrollmentService {
     public EnrollmentDTO markAsCompleted(Long enrollmentId) throws Exception {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrôlement non trouvé"));
-        
+
         enrollment.setCompleted(true);
         enrollment.setProgress(100.0);
         enrollment.setLastAccessed(LocalDateTime.now());
-        
+
         Enrollment saved = enrollmentRepository.save(enrollment);
         log.info("Cours marqué comme complété: enrollmentId={}", enrollmentId);
-        
+
         return EnrollmentDTO.fromEntity(saved);
     }
 
@@ -144,5 +145,40 @@ public class EnrollmentService {
             enrollment.setLastAccessed(LocalDateTime.now());
             enrollmentRepository.save(enrollment);
         });
+    }
+
+    /**
+     * Valide ou rejette un enrôlement
+     */
+    @Transactional
+    public EnrollmentDTO validateEnrollment(Long enrollmentId, com.ihm.backend.enums.EnrollmentStatus newStatus,
+            UUID validatorId) throws Exception {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrôlement non trouvé"));
+
+        // Vérifier que le validateur est le propriétaire du cours
+        if (!enrollment.getCourse().getAuthor().getId().equals(validatorId)) {
+            // TODO: Ajouter vérification ADMIN si nécessaire
+            log.warn("L'utilisateur {} a tenté de valider l'enrôlement {} sans être l'auteur du cours", validatorId,
+                    enrollmentId);
+            throw new AccessDeniedException("Vous n'êtes pas l'auteur de ce cours");
+        }
+
+        enrollment.setStatus(newStatus);
+        Enrollment saved = enrollmentRepository.save(enrollment);
+        log.info("Statut de l'enrôlement {} mis à jour vers {}", enrollmentId, newStatus);
+
+        return EnrollmentDTO.fromEntity(saved);
+    }
+
+    /**
+     * Récupère les enrôlements en attente pour les cours d'un enseignant
+     */
+    public List<EnrollmentDTO> getPendingEnrollmentsForTeacher(UUID teacherId) {
+        return enrollmentRepository
+                .findByCourse_Author_IdAndStatus(teacherId, com.ihm.backend.enums.EnrollmentStatus.PENDING)
+                .stream()
+                .map(EnrollmentDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }

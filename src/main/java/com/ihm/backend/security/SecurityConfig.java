@@ -23,7 +23,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)  // Active @PreAuthorize
+@EnableMethodSecurity(prePostEnabled = true) // Active @PreAuthorize
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -35,42 +35,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // DÉSACTIVER CSRF POUR LES APIs REST
-            .csrf(csrf -> csrf.disable()) // ← Important pour les APIs REST
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // === SWAGGER/OPENAPI - ACCÈS PUBLIC ===
-                .requestMatchers(
-                    "/",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
-                    "/webjars/**",
-                    "/api-docs/**",
-                    "/api-docs.yaml",
-                    "/favicon.ico",
-                    "/error"
-                ).permitAll()
-                
-                // === API AUTHENTIFICATION - ACCÈS PUBLIC ===
-                .requestMatchers(
-                    "/api/v1/auth/**", // ← Votre chemin d'API
-                    "/api/auth/**",
-                    "/api/public/**",
-                    "/api/register",
-                    "/api/login",
-                    "/api/health",
-                    "/actuator/health"
-                ).permitAll()
-                
-                // === TOUTES LES AUTRES ROUTES NÉCESSITENT AUTHENTIFICATION ===
-                .anyRequest().authenticated())
-            .addFilterBefore(jwtAuthenticationFilter, 
-                UsernamePasswordAuthenticationFilter.class);
-        
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // DÉSACTIVER CSRF POUR LES APIs REST
+                .csrf(csrf -> csrf.disable()) // ← Important pour les APIs REST
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // === SWAGGER/OPENAPI - ACCÈS PUBLIC ===
+                        .requestMatchers(
+                                "/",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/api-docs/**",
+                                "/api-docs.yaml",
+                                "/favicon.ico",
+                                "/error")
+                        .permitAll()
+
+                        // === API AUTHENTIFICATION - ACCÈS PUBLIC ===
+                        .requestMatchers(
+                                "/api/v1/auth/**", // ← Votre chemin d'API
+                                "/api/auth/**",
+                                "/api/public/**",
+                                "/api/register",
+                                "/api/login",
+                                "/api/health",
+                                "/actuator/health")
+                        .permitAll()
+
+                        // === COURSES - AUTHENTIFICATION REQUISE ===
+                        .requestMatchers("/courses/**").authenticated()
+
+                        // === TOUTES LES AUTRES ROUTES NÉCESSITENT AUTHENTIFICATION ===
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -78,34 +81,31 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "http://localhost:4200",
-            "http://localhost:8080",
-            "http://localhost:5173", // Vite/React
-            "http://127.0.0.1:3000",
-            "http://127.0.0.1:8080"
-        ));
+                "http://localhost:3000",
+                "http://localhost:4200",
+                "http://localhost:8080",
+                "http://localhost:5173", // Vite/React
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:8080"));
         configuration.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
+                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", 
-            "Content-Type",
-            "Accept",
-            "X-Requested-With",
-            "Cache-Control",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
-        ));
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "X-Requested-With",
+                "Cache-Control",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"));
         configuration.setExposedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "Access-Control-Allow-Origin",
-            "Access-Control-Allow-Credentials"
-        ));
+                "Authorization",
+                "Content-Type",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

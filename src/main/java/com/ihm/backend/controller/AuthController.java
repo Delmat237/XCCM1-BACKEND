@@ -25,7 +25,7 @@ public class AuthController {
     @PostMapping("/register")
     @Deprecated // Garder pour compatibilité
     public ResponseEntity<ApiResponse<AuthenticationResponse>> register(
-            @RequestBody RegisterRequest request) {
+            @RequestBody @jakarta.validation.Valid RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
@@ -34,9 +34,9 @@ public class AuthController {
      */
     @PostMapping("/register/student")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> registerStudent(
-            @RequestBody StudentRegisterRequest request) {
+            @RequestBody @jakarta.validation.Valid StudentRegisterRequest request) {
         ApiResponse<AuthenticationResponse> response = authService.registerStudent(request);
-        
+
         if (response.getStatus() == 201) {
             return ResponseEntity.status(201).body(response);
         }
@@ -48,9 +48,9 @@ public class AuthController {
      */
     @PostMapping("/register/teacher")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> registerTeacher(
-            @RequestBody TeacherRegisterRequest request) {
+            @RequestBody @jakarta.validation.Valid TeacherRegisterRequest request) {
         ApiResponse<AuthenticationResponse> response = authService.registerTeacher(request);
-        
+
         if (response.getStatus() == 201) {
             return ResponseEntity.status(201).body(response);
         }

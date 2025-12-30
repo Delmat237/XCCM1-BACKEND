@@ -1,5 +1,5 @@
-package com.ihm.backend.dto.responses;
+package com.ihm.backend.dto.response;
 
 public class UserCreateResponse {
-    
+
 }
