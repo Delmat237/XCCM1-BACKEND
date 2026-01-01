@@ -18,14 +18,14 @@ import java.util.function.Function;
 @Slf4j
 public class JwtService {
 
-    @Value("${jwt.secret:ce4f01beeee4257f8ae44276369cd65974b8e114a9103cdc738f01c391a9b023}")
- private String secretKey;
+    @Value("${application.security.jwt.secret-key:ce4f01beeee4257f8ae44276369cd65974b8e114a9103cdc738f01c391a9b023}")
+    private String secretKey;
 
- @Value("${jwt.expiration:86400000}") // 24h par défaut
- private long jwtExpiration;
+    @Value("${application.security.jwt.expiration:86400000}") // 24h par défaut
+    private long jwtExpiration;
 
- @Value("${jwt.refresh-expiration:604800000}") // 7 jours
- private long refreshExpiration;
+    @Value("${application.security.jwt.refresh-expiration:604800000}") // 7 jours
+    private long refreshExpiration;
 
  // Génère le token d'accès
  public String generateToken(UserDetails userDetails) {
