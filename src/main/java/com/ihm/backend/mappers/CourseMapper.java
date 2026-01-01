@@ -7,19 +7,19 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import com.ihm.backend.DTO.requests.CourseCreateRequestDTO;
-import com.ihm.backend.DTO.requests.CourseUpdateRequestDTO;
-import com.ihm.backend.DTO.responses.CourseResponse;
-import com.ihm.backend.entities.Course;
+import com.ihm.backend.dto.request.CourseCreateRequest;
+import com.ihm.backend.dto.request.CourseUpdateRequest;
+import com.ihm.backend.dto.response.CourseResponse;
+import com.ihm.backend.entity.Course;
 
 @Mapper(componentModel = "spring")
 public interface CourseMapper{
     @Mapping(target = "id",ignore = true)
-    @Mapping(target = "status",constant = "BROUILLON")
+    @Mapping(target = "status",constant = "DRAFT")
     @Mapping(target = "createdAt",expression = "java(java.time.LocalDateTime.now())")
-    Course toEntity(CourseCreateRequestDTO course);
+    Course toEntity(CourseCreateRequest course);
 
     CourseResponse toResponse(Course course);
     List<CourseResponse> toResponse(List<Course> courses);
-    void updateEntityFromDto(CourseUpdateRequestDTO dto, @MappingTarget Course entity);
+    void updateEntity(CourseUpdateRequest dto, @MappingTarget Course entity);
 }
