@@ -38,7 +38,7 @@ services:
         condition: service_healthy
     ports:
       # L'application interne (app) utilise le service 'kafka' (port 9092 interne)
-      - "9092:9093"
+      - "9092:9092"
       # Le listener OUTSIDE utilise le port 9093 interne, mais est mappé au port 9092 de l'hôte
       - "9094:9093" # NOUVEAU MAPPAGE
     environment:
