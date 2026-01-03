@@ -1,0 +1,36 @@
+services:
+  # The Spring Boot Backend
+  - type: web
+    name: xccm1-backend
+    runtime: docker
+    plan: free # Change to 'starter' or higher for production
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: 8080
+      - key: DB_URL
+        fromDatabase:
+          name: xccm1-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: xccm1-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: xccm1-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true # Generates a secure random value
+      # Kafka Configuration - placeholder for external or internal Kafka
+      - key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+        value: host.docker.internal:9094 # Update if using external provider
+    healthCheckPath: /actuator/health
+
+databases:
+  # The PostgreSQL Database
+  - name: xccm1-db
+    databaseName: xccm1
+    user: xccm_user
+    plan: free # Change to 'starter' or higher for production
