@@ -23,44 +23,7 @@ services:
           property: password
       - key: JWT_SECRET
         generateValue: true # Generates a secure random value
-      # Kafka Configuration
-      - key: SPRING_KAFKA_BOOTSTRAP_SERVERS
-        value: kafka:9092
     healthCheckPath: /actuator/health
-
-  # Zookeeper Service
-  - type: pserv
-    name: zookeeper
-    runtime: image
-    plan: free # Private services require at least the Starter plan
-    image:
-      url: confluentinc/cp-zookeeper:7.5.0
-    envVars:
-      - key: ZOOKEEPER_CLIENT_PORT
-        value: 2181
-      - key: ZOOKEEPER_TICK_TIME
-        value: 2000
-
-  # Kafka Service
-  - type: pserv
-    name: kafka
-    runtime: image
-    plan: free # Private services require at least the Starter plan
-    image:
-      url: confluentinc/cp-kafka:7.5.0
-    envVars:
-      - key: KAFKA_BROKER_ID
-        value: 1
-      - key: KAFKA_ZOOKEEPER_CONNECT
-        value: zookeeper:2181
-      - key: KAFKA_ADVERTISED_LISTENERS
-        value: PLAINTEXT://kafka:9092
-      - key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-        value: 1
-      - key: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
-        value: 1
-      - key: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
-        value: 1
 
 databases:
   # The PostgreSQL Database
