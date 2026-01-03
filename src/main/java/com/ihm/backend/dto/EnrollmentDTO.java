@@ -28,6 +28,8 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EnrollmentDTO {
 
+    private Long id;
+
     private Integer courseId;
 
     private String userId;
@@ -53,6 +55,7 @@ public class EnrollmentDTO {
         }
 
         return EnrollmentDTO.builder()
+                .id(enrollment.getId())
                 .courseId(enrollment.getCourseId())
                 .userId(enrollment.getUserId() != null ? enrollment.getUserId().toString() : null)
                 .enrolledAt(enrollment.getEnrolledAt())
