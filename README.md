@@ -43,7 +43,7 @@ C'est la méthode la plus simple, elle lance l'API, la base de données PostgreS
 
 ```bash
 # Cloner le projet
-git clone <votre-repo-url>
+git clone https://github.com/Delmat237/XCCM1-BACKEND.git
 cd XCCM1-BACKEND
 
 # Lancer tous les services
@@ -95,23 +95,21 @@ Un fichier `render.yaml` est inclus à la racine pour utiliser la fonctionnalit�
 
 ## 👥 L'Équipe (Team 4GI)
 
-Ce projet est le fruit du travail collaboratif de **12 étudiants** ingénieurs de la promotion 4GI.
+Ce projet est le fruit du travail collaboratif de **12 étudiants** ingénieurs de la promotion 4GI de l'ENSPY.
 
-**Chef de Projet :**
-*   👤 **AZANGUE LEONEL DELMAT**
-
-**Membres de l'équipe :**
-*   👤 [Membre 2]
-*   👤 [Membre 3]
-*   👤 [Membre 4]
-*   👤 [Membre 5]
-*   👤 [Membre 6]
-*   👤 [Membre 7]
-*   👤 [Membre 8]
-*   👤 [Membre 9]
-*   👤 [Membre 10]
-*   👤 [Membre 11]
-*   👤 [Membre 12]
+| Matricule | Distinctions | Nom & Prénom |
+| :--- | :---: | :--- |
+| **22P206** | � | **AZANGUE LEONEL DELMAT (Chef de Projet)** |
+| 22P448 | � | BALA ANDEGUE FRANCOIS LIONNEL |
+| 22P582 | � | NKOLO ANTAGANA STACY |
+| 22P482 | � | NANA NDOUNDAM GABRIELLE |
+| 22P292 | � | NANKENG TSAMO PIERRE MARCELLE |
+| 22P596 | � | NCHANG ROY FRU |
+| 22P584 | � | NGUETCHUISSI TCHUGOUA BRUNEL LANDRY |
+| 22P572 | � | SOUNTSA DJIELE PIO VIANNEY |
+| 21P064 | � | OSSOMBE PIERRE RENE RAOUL |
+| 22P607 | � | NKAMLA CHEDJOU JOHAN |
+| 22P250 | � | NTIH TCHIO TAMOGOU DARYL |
 
 ---
 *Réalisé avec ❤️ à l'École Nationale Supérieure Polytechnique de Yaoundé - 2026*
