@@ -25,7 +25,10 @@ import java.util.Map;
 public class ApiResponse<T> {
 
     @Schema(description = "Code de statut HTTP", example = "200")
-    private int status;
+    private int code;
+
+    @Schema(description = "Indique si l'opération a réussi", example = "true")
+    private boolean success;
 
     @Schema(description = "Message décrivant le résultat de l'opération", example = "Opération réussie")
     private String message;
@@ -55,7 +58,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> success(String message, T data) {
         return ApiResponse.<T>builder()
-                .status(200)
+                .code(200)
+                .success(true)
                 .message(message)
                 .data(data)
                 .timestamp(LocalDateTime.now())
@@ -71,7 +75,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> success(String message) {
         return ApiResponse.<T>builder()
-                .status(200)
+                .code(200)
+                .success(true)
                 .message(message)
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -87,7 +92,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> created(String message, T data) {
         return ApiResponse.<T>builder()
-                .status(201)
+                .code(201)
+                .success(true)
                 .message(message)
                 .data(data)
                 .timestamp(LocalDateTime.now())
@@ -103,7 +109,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> noContent(String message) {
         return ApiResponse.<T>builder()
-                .status(204)
+                .code(204)
+                .success(true)
                 .message(message)
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -114,15 +121,16 @@ public class ApiResponse<T> {
     /**
      * Crée une réponse d'erreur générique
      *
-     * @param status  Code de statut HTTP
+     * @param code    Code de statut HTTP
      * @param message Message d'erreur
      * @param error   Détails de l'erreur
      * @param <T>     Type de données
      * @return ApiResponse avec statut d'erreur
      */
-    public static <T> ApiResponse<T> error(int status, String message, String error) {
+    public static <T> ApiResponse<T> error(int code, String message, String error) {
         return ApiResponse.<T>builder()
-                .status(status)
+                .code(code)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -139,7 +147,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> badRequest(String message, String error) {
         return ApiResponse.<T>builder()
-                .status(400)
+                .code(400)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -156,7 +165,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> validationError(String message, Map<String, String> errors) {
         return ApiResponse.<T>builder()
-                .status(400)
+                .code(400)
+                .success(false)
                 .message(message)
                 .errors(errors)
                 .timestamp(LocalDateTime.now())
@@ -173,7 +183,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> unauthorized(String message, String error) {
         return ApiResponse.<T>builder()
-                .status(401)
+                .code(401)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -190,7 +201,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> forbidden(String message, String error) {
         return ApiResponse.<T>builder()
-                .status(403)
+                .code(403)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -207,7 +219,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> notFound(String message, String error) {
         return ApiResponse.<T>builder()
-                .status(404)
+                .code(404)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -224,7 +237,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> conflict(String message, String error) {
         return ApiResponse.<T>builder()
-                .status(409)
+                .code(409)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -241,7 +255,8 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> internalError(String message, String error) {
         return ApiResponse.<T>builder()
-                .status(500)
+                .code(500)
+                .success(false)
                 .message(message)
                 .error(error)
                 .timestamp(LocalDateTime.now())
@@ -256,7 +271,7 @@ public class ApiResponse<T> {
      * @return true si le statut est 2xx
      */
     public boolean isSuccess() {
-        return status >= 200 && status < 300;
+        return code >= 200 && code < 300;
     }
 
     /**
@@ -265,7 +280,7 @@ public class ApiResponse<T> {
      * @return true si le statut est >= 400
      */
     public boolean isError() {
-        return status >= 400;
+        return code >= 400;
     }
 }
 

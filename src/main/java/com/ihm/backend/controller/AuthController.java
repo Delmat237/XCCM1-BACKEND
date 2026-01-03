@@ -37,10 +37,10 @@ public class AuthController {
             @RequestBody @jakarta.validation.Valid StudentRegisterRequest request) {
         ApiResponse<AuthenticationResponse> response = authService.registerStudent(request);
 
-        if (response.getStatus() == 201) {
+        if (response.getCode() == 201) {
             return ResponseEntity.status(201).body(response);
         }
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
     /**
@@ -51,10 +51,10 @@ public class AuthController {
             @RequestBody @jakarta.validation.Valid TeacherRegisterRequest request) {
         ApiResponse<AuthenticationResponse> response = authService.registerTeacher(request);
 
-        if (response.getStatus() == 201) {
+        if (response.getCode() == 201) {
             return ResponseEntity.status(201).body(response);
         }
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
     @PostMapping("/forgot-password")

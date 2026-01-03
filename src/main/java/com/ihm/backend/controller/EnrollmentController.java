@@ -27,21 +27,12 @@ public class EnrollmentController {
      */
     @PostMapping("/courses/{courseId}")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<?> enrollInCourse(
+    public ResponseEntity<ApiResponse<EnrollmentDTO>> enrollInCourse(
             @PathVariable Integer courseId,
-            Authentication authentication) {
-        try {
-            User student = (User) authentication.getPrincipal();
-            EnrollmentDTO enrollment = enrollmentService.enrollStudent(courseId, student.getId());
-            return ResponseEntity.ok(ApiResponse.success("Enrôlement réussi", enrollment));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.badRequest(e.getMessage(), null));
-        } catch (Exception e) {
-            log.error("Erreur lors de l'enrôlement", e);
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.internalError("Erreur lors de l'enrôlement", e.getMessage()));
-        }
+            Authentication authentication) throws Exception {
+        User student = (User) authentication.getPrincipal();
+        EnrollmentDTO enrollment = enrollmentService.enrollStudent(courseId, student.getId());
+        return ResponseEntity.ok(ApiResponse.success("Enrôlement réussi", enrollment));
     }
 
     /**
@@ -49,16 +40,10 @@ public class EnrollmentController {
      */
     @GetMapping("/my-courses")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<?> getMyEnrollments(Authentication authentication) {
-        try {
-            User student = (User) authentication.getPrincipal();
-            List<EnrollmentDTO> enrollments = enrollmentService.getUserEnrollments(student.getId());
-            return ResponseEntity.ok(ApiResponse.success("Enrôlements récupérés", enrollments));
-        } catch (Exception e) {
-            log.error("Erreur lors de la récupération des enrôlements", e);
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
-        }
+    public ResponseEntity<ApiResponse<List<EnrollmentDTO>>> getMyEnrollments(Authentication authentication) {
+        User student = (User) authentication.getPrincipal();
+        List<EnrollmentDTO> enrollments = enrollmentService.getUserEnrollments(student.getId());
+        return ResponseEntity.ok(ApiResponse.success("Enrôlements récupérés", enrollments));
     }
 
     /**
@@ -66,21 +51,12 @@ public class EnrollmentController {
      */
     @PutMapping("/{enrollmentId}/progress")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<?> updateProgress(
+    public ResponseEntity<ApiResponse<EnrollmentDTO>> updateProgress(
             @PathVariable Long enrollmentId,
             @RequestParam Double progress,
-            Authentication authentication) {
-        try {
-            EnrollmentDTO updated = enrollmentService.updateProgress(enrollmentId, progress);
-            return ResponseEntity.ok(ApiResponse.success("Progression mise à jour", updated));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.badRequest(e.getMessage(), null));
-        } catch (Exception e) {
-            log.error("Erreur lors de la mise à jour de la progression", e);
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
-        }
+            Authentication authentication) throws Exception {
+        EnrollmentDTO updated = enrollmentService.updateProgress(enrollmentId, progress);
+        return ResponseEntity.ok(ApiResponse.success("Progression mise à jour", updated));
     }
 
     /**
@@ -88,17 +64,11 @@ public class EnrollmentController {
      */
     @PostMapping("/{enrollmentId}/complete")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<?> markAsCompleted(
+    public ResponseEntity<ApiResponse<EnrollmentDTO>> markAsCompleted(
             @PathVariable Long enrollmentId,
-            Authentication authentication) {
-        try {
-            EnrollmentDTO completed = enrollmentService.markAsCompleted(enrollmentId);
-            return ResponseEntity.ok(ApiResponse.success("Cours marqué comme complété", completed));
-        } catch (Exception e) {
-            log.error("Erreur lors du marquage comme complété", e);
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
-        }
+            Authentication authentication) throws Exception {
+        EnrollmentDTO completed = enrollmentService.markAsCompleted(enrollmentId);
+        return ResponseEntity.ok(ApiResponse.success("Cours marqué comme complété", completed));
     }
 
     /**
@@ -106,23 +76,17 @@ public class EnrollmentController {
      */
     @GetMapping("/courses/{courseId}")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<?> getEnrollmentForCourse(
+    public ResponseEntity<ApiResponse<EnrollmentDTO>> getEnrollmentForCourse(
             @PathVariable Integer courseId,
             Authentication authentication) {
-        try {
-            User student = (User) authentication.getPrincipal();
-            EnrollmentDTO enrollment = enrollmentService.getEnrollmentForUser(courseId, student.getId());
+        User student = (User) authentication.getPrincipal();
+        EnrollmentDTO enrollment = enrollmentService.getEnrollmentForUser(courseId, student.getId());
 
-            if (enrollment == null) {
-                return ResponseEntity.ok(ApiResponse.success("Non enrôlé", null));
-            }
-
-            return ResponseEntity.ok(ApiResponse.success("Enrôlement trouvé", enrollment));
-        } catch (Exception e) {
-            log.error("Erreur lors de la récupération de l'enrôlement", e);
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
+        if (enrollment == null) {
+            return ResponseEntity.ok(ApiResponse.success("Non enrôlé", null));
         }
+
+        return ResponseEntity.ok(ApiResponse.success("Enrôlement trouvé", enrollment));
     }
 
     /**
@@ -131,19 +95,13 @@ public class EnrollmentController {
      */
     @PutMapping("/{enrollmentId}/validate")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<?> validateEnrollment(
+    public ResponseEntity<ApiResponse<EnrollmentDTO>> validateEnrollment(
             @PathVariable Long enrollmentId,
             @RequestParam com.ihm.backend.enums.EnrollmentStatus status,
-            Authentication authentication) {
-        try {
-            User teacher = (User) authentication.getPrincipal();
-            EnrollmentDTO validated = enrollmentService.validateEnrollment(enrollmentId, status, teacher.getId());
-            return ResponseEntity.ok(ApiResponse.success("Statut de l'enrôlement mis à jour", validated));
-        } catch (Exception e) {
-            log.error("Erreur lors de la validation de l'enrôlement", e);
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.badRequest(e.getMessage(), null));
-        }
+            Authentication authentication) throws Exception {
+        User teacher = (User) authentication.getPrincipal();
+        EnrollmentDTO validated = enrollmentService.validateEnrollment(enrollmentId, status, teacher.getId());
+        return ResponseEntity.ok(ApiResponse.success("Statut de l'enrôlement mis à jour", validated));
     }
 
     /**
@@ -151,15 +109,9 @@ public class EnrollmentController {
      */
     @GetMapping("/pending")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<?> getPendingEnrollments(Authentication authentication) {
-        try {
-            User teacher = (User) authentication.getPrincipal();
-            List<EnrollmentDTO> pending = enrollmentService.getPendingEnrollmentsForTeacher(teacher.getId());
-            return ResponseEntity.ok(ApiResponse.success("Enrôlements en attente récupérés", pending));
-        } catch (Exception e) {
-            log.error("Erreur lors de la récupération des enrôlements en attente", e);
-            return ResponseEntity.internalServerError()
-                    .body(ApiResponse.internalError("Erreur serveur", e.getMessage()));
-        }
+    public ResponseEntity<ApiResponse<List<EnrollmentDTO>>> getPendingEnrollments(Authentication authentication) {
+        User teacher = (User) authentication.getPrincipal();
+        List<EnrollmentDTO> pending = enrollmentService.getPendingEnrollmentsForTeacher(teacher.getId());
+        return ResponseEntity.ok(ApiResponse.success("Enrôlements en attente récupérés", pending));
     }
 }
